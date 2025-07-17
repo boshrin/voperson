@@ -28,6 +28,7 @@
   * [`voPersonExternalAffiliation` Attribute Definition](#vopersonexternalaffiliation-attribute-definition)
   * [`voPersonExternalID` Attribute Definition](#vopersonexternalid-attribute-definition)
   * [`voPersonID` Attribute Definition](#vopersonid-attribute-definition)
+  * [`voPersonMfaStatus` Attribute Definition](#vopersonmfastatus-attribute-definition)
   * [`voPersonPolicyAgreement` Attribute Definition](#vopersonpolicyagreement-attribute-definition)
   * [`voPersonScopedAffiliation` Attribute Definition](#vopersonscopedaffiliation-attribute-definition)
   * [`voPersonSoRID` Attribute Definition](#vopersonsorid-attribute-definition)
@@ -899,6 +900,94 @@ The platform or enterprise identifier.
 
 ```
 voPersonID: V097531
+```
+
+## `voPersonMfaStatus` Attribute Definition
+
+<table>
+ <tr>
+  <th>OID</th>
+  <td>1.3.6.1.4.1.25178.4.1.16</td>
+ </tr>
+ 
+ <tr>
+  <th>RFC4512 Definition</th>
+  <td>
+<pre>( 1.3.6.1.4.1.25178.4.1.16
+        NAME 'voPersonMfaStatus'
+        DESC 'voPerson MFA Status'
+        EQUALITY caseIgnoreMatch
+        SYNTAX '1.3.6.1.4.1.1466.115.121.1.16' )</pre>
+  </td>
+ </tr>
+ 
+ <tr>
+  <th>Multiple Values?</th>
+  <td>Yes, when used with the <code>scope-</code> attribute option</td>
+ </tr>
+ 
+ <tr>
+  <th>Attribute Options</th>
+  <td>
+   <ul>
+    <li><code>scope-<i>token</i></code>: Denotes status is associated with token represented in <code>voPersonToken</code> for the same DN</li>
+    <li><code>time-<i>time</i></code>: When used with <code>reset</code>, <code>setup</code>, or <code>suspended</code>, the time until which authentication can be completed without MFA</li>
+   </ul>
+  </td>
+ </tr>
+</table>
+
+### Definition
+
+The person’s status as related to Multi-Factor Authentication (MFA). When used with the `scope` Attribute Option, the status is specific only to the specified token.
+
+The following standard values are defined, though the values of this attribute are not constrained to them:
+
+* active: MFA is active for the subject
+* available: MFA is available for the subject on an opt-in basis, but has not been set up
+* declined: MFA is available for the subject on an opt-out basis, and the subject has opted out
+* exempt: MFA is generally required, however this subject is exempt and has not established MFA
+* required: MFA is generally required, however this subject has not yet set it up
+* reset: MFA has been reset for the subject, who must reenroll
+* setup: The subject is in the process of setting up MFA
+* suspended: MFA is currently suspended for this subject (for example, as a result of administrator action)
+
+### Additional Considerations
+
+For real time signaling see the [REFEDS MFA Profile](https://refeds.org/profile/mfa).
+  
+### Example
+
+```
+voPersonMfaStatus: active
+```
+
+### Typical State Flow
+
+The following flow diagram describes the expected state changes for this
+attribute in a typical deployment. It is not normative.
+
+```mermaid
+graph TD;
+  NEW@{ shape: circle, label: "New Account" }
+  OPTOUT@{ shape: diamond, label: "Opted-Out?" }
+  ISEXEMPT@{ shape: diamond, label: "Is Exempt?" }
+  ISREQ@{ shape: diamond, label: "MFA Required?" }
+  NEW-->ISREQ
+  ISREQ--Yes-->ISEXEMPT
+  ISREQ--No -->OPTOUT
+  ISEXEMPT--Yes-->Exempt
+  ISEXEMPT--No -->Required
+  OPTOUT--Yes-->Declined
+  OPTOUT--No -->Available
+  Required-->Setup
+  Available-->Setup
+  Setup-->Active
+  Active-->Reset
+  Active-->Suspended
+  Reset-->Active
+  Suspended-->Reset
+  Suspended-->Active
 ```
 
 ## `voPersonPolicyAgreement` Attribute Definition
