@@ -1,4 +1,4 @@
-# voPerson v2.0.0
+# voPerson v2.1.0
 
 * [Introduction](#introduction)
 * [Discussion on Identifiers](#discussion-on-identifiers)
@@ -947,12 +947,17 @@ The following standard values are defined, though the values of this attribute a
 * available: MFA is available for the subject on an opt-in basis, but has not been set up
 * declined: MFA is available for the subject on an opt-out basis, and the subject has opted out
 * exempt: MFA is generally required, however this subject is exempt and has not established MFA
-* required: MFA is generally required, however this subject has not yet set it up
+* pending: MFA is generally required, however this subject has not yet set it up
 * reset: MFA has been reset for the subject, who must reenroll
 * setup: The subject is in the process of setting up MFA
 * suspended: MFA is currently suspended for this subject (for example, as a result of administrator action)
 
 ### Additional Considerations
+
+The value `pending` was selected instead of `required` to avoid implying a run time
+aspect (ie: "MFA is required for the user when they log in").
+
+For additional context see the [voPerson MFA Auxiliary Document](aux/voPerson-MFA.md).
 
 For real time signaling see the [REFEDS MFA Profile](https://refeds.org/profile/mfa).
   
@@ -960,34 +965,6 @@ For real time signaling see the [REFEDS MFA Profile](https://refeds.org/profile/
 
 ```
 voPersonMfaStatus: active
-```
-
-### Typical State Flow
-
-The following flow diagram describes the expected state changes for this
-attribute in a typical deployment. It is not normative.
-
-```mermaid
-graph TD;
-  NEW@{ shape: circle, label: "New Account" }
-  OPTOUT@{ shape: diamond, label: "Opted-Out?" }
-  ISEXEMPT@{ shape: diamond, label: "Is Exempt?" }
-  ISREQ@{ shape: diamond, label: "MFA Required?" }
-  NEW-->ISREQ
-  ISREQ--Yes-->ISEXEMPT
-  ISREQ--No -->OPTOUT
-  ISEXEMPT--Yes-->Exempt
-  ISEXEMPT--No -->Required
-  OPTOUT--Yes-->Declined
-  OPTOUT--No -->Available
-  Required-->Setup
-  Available-->Setup
-  Setup-->Active
-  Active-->Reset
-  Active-->Suspended
-  Reset-->Active
-  Suspended-->Reset
-  Suspended-->Active
 ```
 
 ## `voPersonPolicyAgreement` Attribute Definition
@@ -1505,6 +1482,10 @@ version change will not break existing LDAP entries.
 
 A major version change (eg: v1.0.0 to v2.0.0) requires a reconfiguration to the
 LDAP server, and may require existing records to be modified.
+
+## [v2.1.0](https://github.com/voperson/voperson/tree/2.1.0)
+
+* Added voPersonMfaStatus.
 
 ## [v2.0.0](https://github.com/voperson/voperson/tree/2.0.0)
 
