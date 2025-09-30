@@ -917,7 +917,7 @@ voPersonID: V097531
         NAME 'voPersonMfaStatus'
         DESC 'voPerson MFA Status'
         EQUALITY caseIgnoreMatch
-        SYNTAX '1.3.6.1.4.1.1466.115.121.1.16' )</pre>
+        SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' )</pre>
   </td>
  </tr>
  
